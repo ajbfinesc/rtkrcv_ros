@@ -2,7 +2,7 @@
 
 ROS translation of the RTKRCV - a real-time GNSS precise positioning application included in the RTKLIB package
 
-
+![rtkrcv_ros_diagram](rtkrcv_ros/figures/rtkrcv_ros.jpg)
 
 [RTKLIB](http://www.rtklib.com/) was originally developed by [Tomoji Takasu](https://github.com/tomojitakasu), Copyright (c) 2007-2013, T. Takasu, All rights reserved.
 
@@ -30,7 +30,7 @@ Show BibTeX - Read on arXiv
 
 *Thank You!*
 
-![alt text](rtkrcv_ros/figures/rtkrcv_ros.jpg)
+
 
 ### Version
 The current version was developed based on the RTKLIB version 2.4.2 p13
