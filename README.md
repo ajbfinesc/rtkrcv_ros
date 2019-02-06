@@ -1,10 +1,14 @@
 # RTKRCV_ROS
 
-ROS translation of the RTKRCV - a real-time GNSS precise positioning application included in the RTKLIB package
+ROS translation of the RTKRCV - a real-time GNSS precise positioning application included in the RTKLIB package. 
+
+New features include ROS topic publishing of output solutions. The inclusion of a new velocity output format. A new ROS service offers control over the RTK server.
 
 ![rtkrcv_ros_diagram](rtkrcv_ros/figures/rtkrcv_ros.jpg)
 
 [RTKLIB](http://www.rtklib.com/) was originally developed by [Tomoji Takasu](https://github.com/tomojitakasu), Copyright (c) 2007-2013, T. Takasu, All rights reserved.
+
+---
 
 ### Summary
 
