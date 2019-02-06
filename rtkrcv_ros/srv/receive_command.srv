@@ -1,0 +1,4 @@
+string cmd
+---
+string ack_str
+bool success

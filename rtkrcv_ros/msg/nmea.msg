@@ -1,0 +1,9 @@
+Header header
+nmea_gpgga gpgga
+nmea_gpgsa gpgsa
+nmea_gpgsa glgsa
+nmea_gpgsa gagsa
+nmea_gpgsv gpgsv
+nmea_gpgsv glgsv
+nmea_gpgsv gagsv
+nmea_gprmc gprmc
