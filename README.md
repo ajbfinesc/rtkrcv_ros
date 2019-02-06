@@ -30,7 +30,7 @@ Show BibTeX - Read on arXiv
 
 *Thank You!*
 
-![alt text](https://www.lsa.isep.ipp.pt/~aferreira/rtkrcv.jpg)
+![alt text](rtkrcv_ros/figures/rtkrcv_ros.jpg)
 
 ### Version
 The current version was developed based on the RTKLIB version 2.4.2 p13
