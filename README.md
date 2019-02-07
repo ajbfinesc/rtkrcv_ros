@@ -1,4 +1,4 @@
-# RTKRCV_ROS
+# ![rtkrcv_ros_icon](rtkrcv_ros/figures/rtkrcv_ros_icon.jpg) RTKRCV_ROS 
 
 ROS translation of the RTKRCV - a real-time GNSS precise positioning application included in the RTKLIB package. 
 
