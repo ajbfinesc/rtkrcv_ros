@@ -11,12 +11,7 @@ The RTKRCV_ROS includes ROS output publishing, a new velocity output format, ROS
 ---
     
 ### Paper
-If you have used the RTKRCV_ROS package in your project, we would appreciate citations to the following paper:
-
-Fulano, Sicrano, Beltrano. RTKLIB for ROS. Computational Statistics 32 (3), pp 1-15, 2019
-Show BibTeX - Read on arXiv
-
-*Thank You!*
+Paper coming soon...
 
 
 ### Version
