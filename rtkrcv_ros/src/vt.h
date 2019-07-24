@@ -33,6 +33,7 @@ typedef struct vt_tag {                 /* virtual console type */
 /* function prototypes -------------------------------------------------------*/
 extern int vt_open(vt_t *vt, int port, const char *dev);
 extern void vt_close(vt_t *vt);
+extern void vt_close_no_restore(vt_t *vt);
 extern int vt_getc(vt_t *vt, char *c);
 extern int vt_gets(vt_t *vt, char *buff, int n);
 extern int vt_putc(vt_t *vt, char c);

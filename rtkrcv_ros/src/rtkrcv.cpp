@@ -199,11 +199,37 @@ static opt_t rcvopts[]={
     {"",0,NULL,""}
 };
 /* external stop signal ------------------------------------------------------*/
+
+static void closemoni(void);
+static void stopsvr(vt_t *vt);
+int oustat_global;
+
 static void sigshut(int sig)
 {
     trace(3,"sigshut: sig=%d\n",sig);
     
     intflg=1;
+}
+
+static void sigint_handler(int sig)
+{
+    trace(3,"sigint_handler: sig=%d\n",sig);
+    vt_close_no_restore(vt_ptr);
+    
+    stopsvr(vt_ptr);
+    
+    if (moniport>0) closemoni();
+    
+    if (oustat_global>0) rtkclosestat();
+    
+    if (trace>0) traceclose();
+    
+    /* save navigation data */
+    if (!savenav(NAVIFILE,&svr.nav)) {
+        fprintf(stderr,"navigation data save error: %s\n",NAVIFILE);
+    }
+    
+    exit (0);
 }
 /* discard space characters at tail ------------------------------------------*/
 static void chop(char *str)
@@ -407,6 +433,7 @@ static int startsvr(vt_t *vt)
     solopt[0].posf=strfmt[3];
     solopt[1].posf=strfmt[4];
     solopt[1].timef=solopt[0].timef;
+    solopt[1].timeu=solopt[0].timeu;
 
     /* start rtk server */
     if (!rtksvrstart(&svr,svrcycle,buffsize,strtype,paths,strfmt,navmsgsel,
@@ -1335,7 +1362,7 @@ void* srv_thread(void* arg)
     char* topic_name = (char*)arg;
     ros::NodeHandle node_handle;
     node=&node_handle;
-    ros::ServiceServer service = node_handle.advertiseService(strcat(topic_name,"cmd"), cmd_rcv);
+    ros::ServiceServer service = node_handle.advertiseService(strcat(topic_name,"_cmd"), cmd_rcv);
 
     ros::spin();
 
@@ -1357,7 +1384,9 @@ static void cmdshell(vt_t *vt)
     
     while (!intflg) {
         /* output prompt */
-        if (!vt_printf(vt,"%s",CMDPROMPT)) break;
+        if (!vt_printf(vt,"%s",CMDPROMPT)) {
+            break;
+        }
         
         /* input command */
         if (!vt_gets(vt,buff,sizeof(buff))) break;
@@ -1512,13 +1541,17 @@ static void cmdshell(vt_t *vt)
 
 int main(int argc, char **argv)
 {
-	
     pthread_t ros_srv_thread;
 	
     vt_t vt={0};
     vt_ptr=&vt;
     int i,start=0,port=0,outstat=0,trace=0;
-    char *dev="",file[MAXSTR]="", topic_name[30]="rtkrcv";
+    char *dev="",file[MAXSTR]=""; char topic_name[300];
+    
+    ros::init(argc, argv, "rtkrcv_ros");
+    ros::NodeHandle node_handle;
+    node=&node_handle;
+    strcpy(topic_name, ros::this_node::getName().c_str());
     
     for (i=1;i<argc;i++) {
         if      (!strcmp(argv[i],"-s")) start=1;
@@ -1528,13 +1561,10 @@ int main(int argc, char **argv)
         else if (!strcmp(argv[i],"-o")&&i+1<argc) strcpy(file,argv[++i]);
         else if (!strcmp(argv[i],"-r")&&i+1<argc) outstat=atoi(argv[++i]);
         else if (!strcmp(argv[i],"-t")&&i+1<argc) trace=atoi(argv[++i]);
-        else if (!strcmp(argv[i],"-topic")&&i+1<argc) strcpy(topic_name,argv[++i]);
         else fprintf(stderr,"Unknown option: %s\n",argv[i]);
     }
-    ros::init(argc, argv, topic_name);
     
-    ros::NodeHandle node_handle;
-    node=&node_handle;
+    
 
     if (trace>0) {
         traceopen(TRACEFILE);
@@ -1557,6 +1587,7 @@ int main(int argc, char **argv)
     if (!readnav(NAVIFILE,&svr.nav)) {
         fprintf(stderr,"no navigation data: %s\n",NAVIFILE);
     }
+    
     if (outstat>0) {
         rtkopenstat(STATFILE,outstat);
     }
@@ -1568,7 +1599,7 @@ int main(int argc, char **argv)
     /* start rtk server */
     if (start&&!startsvr(&vt)) return -1;
     
-    signal(SIGINT, sigshut);    /* keyboard interrupt */
+    signal(SIGINT, sigint_handler);    /* keyboard interrupt */
     signal(SIGTERM,sigshut);    /* external shutdown signal */
     signal(SIGUSR2,sigshut);
     signal(SIGHUP ,SIG_IGN);

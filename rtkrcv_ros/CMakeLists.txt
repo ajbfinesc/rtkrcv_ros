@@ -36,7 +36,7 @@ generate_messages(
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES rtkrcv_ros
-  CATKIN_DEPENDS roscpp std_msgs message_runtime geometry_msgs
+  CATKIN_DEPENDS roscpp std_msgs message_runtime message_generation geometry_msgs
   DEPENDS system_lib
 )
 
@@ -45,25 +45,19 @@ include_directories(
   ${PROJECT_SOURCE_DIR}/include/rtklib
   ${PROJECT_SOURCE_DIR}/../../devel/include
 )
-set(OPTION -DENAGLO -DENAGAL -DENAQZS -DENACMP -DTRACE -DNFREQ=3 -DNEXOBS=3)
-set(CFLAGS  -O3 -ansi -pedantic -Wno-unused-but-set-variable -Wno-unused-variable -Wno-unused-function ${OPTION} -g)
-link_libraries(pthread m rt)
-add_definitions(${CFLAGS} ${OPTION})
 
 #############Sources rtklib receivers gnss##############
 set(RTKLIB_RECEIVERS  src/src/rcv/binex.c src/src/rcv/crescent.c src/src/rcv/gw10.c src/src/rcv/javad.c
 src/src/rcv/novatel.c src/src/rcv/nvs.c src/src/rcv/rcvlex.c src/src/rcv/rt17.c src/src/rcv/septentrio.c
 src/src/rcv/skytraq.c src/src/rcv/ss2.c src/src/rcv/ublox.c)
-add_library(rtklib_receivers ${RTKLIB_RECEIVERS})
 
 ######################Sources rtklib rtkrcv#####################
 set(RTKLIB_SOURCES_RTKRCV src/vt.c src/src/rtkcmn.c src/src/rtksvr.c src/src/rtkpos.c src/src/geoid.c src/src/solution.c
 src/src/lambda.c src/src/sbas.c src/src/stream.cpp src/src/rcvraw.c src/src/rtcm.c src/src/preceph.c
 src/src/options.c src/src/pntpos.c src/src/ppp.c src/src/ppp_ar.c src/src/rcv/novatel.c src/src/ephemeris.c
 src/src/rinex.c src/src/ionex.c src/src/rtcm2.c src/src/rtcm3.c src/src/rtcm3e.c src/src/qzslex.c ${RTKLIB_RECEIVERS})
-add_library(rtklib_sources_rtkrcv ${RTKLIB_SOURCES_RTKRCV})
 
-###################Executable rtkrcv####################
-add_executable(rtkrcv src/rtkrcv.cpp)
-add_dependencies(rtkrcv rtklib_generate_messages_cpp ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(rtkrcv ${catkin_LIBRARIES} rtklib_sources_rtkrcv)
+###################Executable rtkrcv_ros_node####################
+add_executable(rtkrcv_ros_node src/rtkrcv.cpp ${RTKLIB_SOURCES_RTKRCV})
+add_dependencies(rtkrcv_ros_node rtkrcv_ros_msgs_generate_messages_cpp ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS}  )
+target_link_libraries(rtkrcv_ros_node ${catkin_LIBRARIES})

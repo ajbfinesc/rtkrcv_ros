@@ -1457,7 +1457,6 @@ extern int outsols(unsigned char *buff, const sol_t *sol, const double *rb,
         return 0;
     }
     timeu=opt->timeu<0?0:(opt->timeu>20?20:opt->timeu);
-    
     time=sol->time;
     if (opt->times>=TIMES_UTC) time=gpst2utc(time);
     if (opt->times==TIMES_JST) time=timeadd(time,9*3600.0);
@@ -1471,7 +1470,7 @@ extern int outsols(unsigned char *buff, const sol_t *sol, const double *rb,
         }
         sprintf(s,"%4d%s%*.*f",week,sep,6+(timeu<=0?0:timeu+1),timeu,gpst);
     }
-
+	
     switch (opt->posf) {
         case SOLF_LLH:  p+=outpos (p,s,sol,opt);   break;
         case SOLF_XYZ:  p+=outecef(p,s,sol,opt);   break;

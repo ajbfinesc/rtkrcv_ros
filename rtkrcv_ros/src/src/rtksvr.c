@@ -394,6 +394,7 @@ static DWORD WINAPI rtksvrthread(void *arg)
 static void *rtksvrthread(void *arg)
 #endif
 {
+    
     rtksvr_t *svr=(rtksvr_t *)arg;
     obs_t obs;
     obsd_t data[MAXOBS*2];
@@ -401,7 +402,6 @@ static void *rtksvrthread(void *arg)
     unsigned int tick,ticknmea,tick1hz;
     unsigned char *p,*q;
     int i,j,n,fobs[3]={0},cycle,cputime;
-    int delete_fobs[2];
     tracet(3,"rtksvrthread:\n");
     
     svr->state=1; obs.data=data;
@@ -524,13 +524,10 @@ static void *rtksvrthread(void *arg)
                     fobs[i]+=decoderaw(svr,i);
                 }
             }
-            delete_fobs[0]=0;
-            delete_fobs[1]=0;
-
             if(fobs[0]>0 && fobs[1]>0){
                 for (i=0; i<fobs[0]; i++){
                     int k;
-                    for(k=0+delete_fobs[1]; k<fobs[1]; k++){
+                    for(k=0; k<fobs[1]; k++){
                         double base_time=svr->obs[1][k].data[0].time.time+svr->obs[1][k].data[0].time.sec;
                         double rover_time=svr->obs[0][i].data[0].time.time+svr->obs[0][i].data[0].time.sec;
                         if( base_time == rover_time ){ /*Same epoch*/
@@ -538,6 +535,7 @@ static void *rtksvrthread(void *arg)
                             for (j=0;j<svr->obs[0][i].n&&obs.n<MAXOBS*2;j++) {
                                 obs.data[obs.n++]=svr->obs[0][i].data[j];
                             }
+                            
                             for (j=0; j<svr->obs[1][k].n && obs.n<MAXOBS*2; j++) {
                                 obs.data[obs.n++]=svr->obs[1][k].data[j];
                             }
@@ -557,33 +555,16 @@ static void *rtksvrthread(void *arg)
                             if ((int)(tickget()-tick)>=svr->cycle) {
                                 svr->prcout+=fobs[0]-i-1;
                             }
-                            delete_fobs[0]++;
+
+                                
+                                fobs[0]=0;
+                                fobs[1]=0;
+
                             break;
-                        }else if(rover_time < base_time){
-                            delete_fobs[0]++;
-                            break;
-                        }else{ /* rover_time > base_time*/
-                            delete_fobs[1]++;
                         }
                     }
+                    
                 }
-
-                rtksvrlock(svr);
-                /*  Remove old observations */
-                for(i=0; i<fobs[0]-delete_fobs[0]; i++){
-                    svr->obs[0][i].n=svr->obs[0][delete_fobs[0]+i].n;
-                    svr->obs[0][i].nmax=svr->obs[0][delete_fobs[0]+i].nmax;
-                    svr->obs[0][i].data=svr->obs[0][delete_fobs[0]+i].data;
-                }
-                for(i=0; i<fobs[1]-delete_fobs[1]; i++){
-                    svr->obs[1][i].n=svr->obs[1][delete_fobs[1]+i].n;
-                    svr->obs[1][i].nmax=svr->obs[1][delete_fobs[1]+i].nmax;
-                    svr->obs[1][i].data=svr->obs[1][delete_fobs[1]+i].data;
-                }
-                rtksvrunlock(svr);
-                fobs[0]-=delete_fobs[0];
-                fobs[1]-=delete_fobs[1];
-
             }
             /* send null solution if no solution (1hz) */
             if (svr->rtk.sol.stat==SOLQ_NONE&&cycle%(1000/svr->cycle)==0) {
@@ -602,7 +583,6 @@ static void *rtksvrthread(void *arg)
                 ticknmea=tick;
             }
             if ((cputime=(int)(tickget()-tick))>0) svr->cputime=cputime;
-
             /* sleep until next cycle */
             sleepms(svr->cycle-cputime);
         }

@@ -1831,7 +1831,6 @@ extern int rtkpos(rtk_t *rtk, const obsd_t *obs, int n, const nav_t *nav)
     /* count rover/base station observations */
     for (nu=0;nu   <n&&obs[nu   ].rcv==1;nu++) ;
     for (nr=0;nu+nr<n&&obs[nu+nr].rcv==2;nr++) ;
-    
     time=rtk->sol.time; /* previous epoch */
     
     /* rover position by single point positioning */
@@ -1862,7 +1861,6 @@ extern int rtkpos(rtk_t *rtk, const obsd_t *obs, int n, const nav_t *nav)
         outsolstat(rtk);
         return 1;
     }
-
     if (opt->mode==PMODE_MOVEB) { /*  moving baseline */
 
         /* estimate position/velocity of base station */
@@ -1876,13 +1874,11 @@ extern int rtkpos(rtk_t *rtk, const obsd_t *obs, int n, const nav_t *nav)
             errmsg(rtk,"age of differential error (age=%.1f)\n",rtk->sol.age);
             return 0;
         }
-
-        if (fabs(rtk->sol.age)>TTOL_MOVEB) {
+        /*if (fabs(rtk->sol.age)>TTOL_MOVEB) {
             errmsg(rtk,"time sync error for moving-base (age=%.1f)\n",rtk->sol.age);
             return 0;
-        }
+        }*/
         for (i=0;i<6;i++) rtk->rb[i]=solb.rr[i];
-        
         /* time-synchronized position of base station */
         for (i=0;i<3;i++) rtk->rb[i]+=rtk->rb[i+3]*rtk->sol.age;
     }
