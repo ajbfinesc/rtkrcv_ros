@@ -111,8 +111,8 @@ extern int vt_open(vt_t *vt, int port, const char *dev)
         vt->type=1;
         vt->in=vt->out=sock;
     }
-    else if(*dev){
-/*       if (!*dev) dev=DEF_DEV;*/
+     else{
+        if (!*dev) dev=DEF_DEV;
         if ((fd=open(dev,O_RDWR))<0||tcgetattr(fd,&tio)<0) {
             fprintf(stderr,"console device open error: %s\n",dev);
             return 0;
