@@ -1,6 +1,6 @@
 # RTKRCV_ROS
 
-Translation of the RTKRCV to the ROS environment. The RTKRCV, part of the RTKLIB suite, is a standalone command line application for real-time GNSS precise positioning. The RTKRCV_ROS incorporates ROS features seamlessly, to not intefere with the operating mode and configuration options of the original RTKRCV.
+This package provides a translation of the RTKRCV to the ROS environment. The RTKRCV, part of the RTKLIB suite, is a standalone command line application for real-time GNSS precise positioning. The RTKRCV_ROS incorporates ROS features seamlessly, to not intefere with the operating mode and configuration options of the original RTKRCV.
 
 The RTKRCV_ROS includes ROS output publishing, a new velocity output format, ROS service control over the RTK server and a new observation synchronization method. All configurations are made through the configuration file. Several configuration file examples are provided.
 
@@ -11,7 +11,7 @@ The RTKRCV_ROS includes ROS output publishing, a new velocity output format, ROS
 ---
     
 ### Paper
-Paper coming soon...
+[For additional details please refer to this article](https://doi.org/10.1177/1729881420904526)
 
 
 ### Version
